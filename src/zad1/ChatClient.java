@@ -17,7 +17,7 @@ public class ChatClient {
     private final String id;
     private Socket socket;
     private PrintWriter out;
-    private final StringBuilder chatView = new StringBuilder();
+    private final StringBuffer chatView = new StringBuffer();
     private final ExecutorService receiverExecutor = Executors.newVirtualThreadPerTaskExecutor();
 
     public ChatClient(String host, int port, String id) {
@@ -48,6 +48,11 @@ public class ChatClient {
 
     public void logout() {
         send("LOGOUT");
+        try { Thread.sleep(5); } catch (InterruptedException ignored) {}
+        receiverExecutor.shutdownNow();
+        try {
+            if (socket != null) socket.close();
+        } catch (IOException ignored) {}
     }
 
     public void send(String req) {
